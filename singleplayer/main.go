@@ -19,6 +19,7 @@ func processCommand(command Command) {
 		case "room":
 			fmt.Println("The room is dark an empty. You are alone and there is no way out.")
 			fmt.Println("Game over.")
+			os.Exit(0)
 		case "":
 			fmt.Println("Examine what?")
 		default:
