@@ -32,14 +32,12 @@ func processCommand(command Command) {
 }
 
 func main() {
-
-	terminateClient := false
 	input := bufio.NewReader(os.Stdin)
 
 	fmt.Println("Welcome to Magestro zone!")
 	fmt.Println("You find yourself in a room.")
 
-	for !terminateClient {
+	for {
 		var words []string
 		fmt.Print("> ")
 		line, _ := input.ReadString('\n')
