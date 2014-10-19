@@ -87,6 +87,9 @@ func (player *Player) Execute(command Command) (output string) {
 
 		return "This is not something I can examine."
 
+	case "help":
+		return "Type \"examine <thing>\" to learn more about a thing.\nType \"exit\" or \"quit\" to exit."
+
 	case "exit", "quit":
 		player.quit()
 	}
