@@ -3,63 +3,53 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/michd/magestro-zone/singleplayer/player"
+	"github.com/michd/magestro-zone/singleplayer/things"
 	"os"
 	"strings"
 )
 
-type Command struct {
-	Verb    string
-	Subject string
-}
+// Temporary function to generate an example area to put the player into
+func prepareArea() *things.Area {
+	toilet := new(things.Item)
+	toilet.SetName("toilet")
+	toilet.SetDesc("I can pee in this.")
 
-func processCommand(command Command) {
-	switch strings.ToLower(command.Verb) {
-	case "examine":
-		switch strings.ToLower(command.Subject) {
-		case "room":
-			fmt.Println("The room is dark an empty. You are alone and there is no way out.")
-			fmt.Println("Game over.")
-			os.Exit(0)
-		case "":
-			fmt.Println("Examine what?")
-		default:
-			fmt.Println("I see no", command.Subject)
-		}
-	case "":
-		fmt.Println("uwotm8")
-	default:
-		fmt.Println("I have no idea how to", command.Verb)
-	}
+	sink := new(things.Item)
+	sink.SetName("sink")
+	sink.SetDesc("I can wash my hands in there after peeing.")
+
+	area := new(things.Area)
+	area.SetName("room")
+	area.SetDesc("A generic looking bathroom.")
+	area.AddItem(toilet)
+	area.AddItem(sink)
+
+	return area
 }
 
 func main() {
-	input := bufio.NewReader(os.Stdin)
+	in := bufio.NewReader(os.Stdin)
+	var input, output string
 
-	fmt.Println("Welcome to Magestro zone!")
+	// Set up player
+	fmt.Println("Hi there! What's your name?")
+	fmt.Print("> ")
+	input, _ = in.ReadString('\n')
+	playerName := strings.Trim(input, "\n\r\t ")
+
+	me := player.Create(playerName)
+	me.SetLoc(prepareArea())
+
+	fmt.Printf("Hello %s, welcome to Magestro Zone!\n", me.Name())
 	fmt.Println("You find yourself in a room.")
 
+	// Command loop
 	for {
-		var words []string
-		fmt.Print("> ")
-		line, _ := input.ReadString('\n')
-		words = strings.Split(strings.Trim(line, " \n\t\r"), " ")
-
-		command := new(Command)
-
-		if len(words) > 0 {
-			command.Verb = words[0]
-		}
-
-		if len(words) > 1 {
-			command.Subject = words[1]
-		}
-
-		if strings.ToLower(command.Verb) == "exit" {
-			break
-		}
-
-		processCommand(*command)
-
+		fmt.Print(me.Name() + "> ")
+		input, _ = in.ReadString('\n')
+		output = me.Execute(player.ParseCommand(input))
+		fmt.Println(output)
 	}
 	fmt.Println("Later!")
 }
