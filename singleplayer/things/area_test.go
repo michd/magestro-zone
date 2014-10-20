@@ -4,15 +4,6 @@ import (
 	"testing"
 )
 
-func TestItemExamine(t *testing.T) {
-	item := new(Item)
-	item.desc = "This item sure looks like a thing."
-
-	if wantedOut, out := item.desc, item.Examine(); out != wantedOut {
-		t.Errorf("Examine() want %s, got %s", wantedOut, out)
-	}
-}
-
 func TestAreaExamine(t *testing.T) {
 	area1 := new(Area)
 	area1.desc = "Looks like a room to me."
