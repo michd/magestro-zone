@@ -72,7 +72,7 @@ func (player *Player) Execute(command Command) (output string) {
 		}
 
 		if command.subject == "me" {
-			return "I am " + player.Name() + ". Just another tiny collection in this vast universe."
+			return "I am " + player.Name() + ". Just another tiny collection of atoms in this vast universe."
 		}
 
 		thing := player.find(command.subject)
