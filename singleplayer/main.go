@@ -9,23 +9,23 @@ import (
 	"strings"
 )
 
-// Temporary function to generate an example area to put the player into
 func prepareArea() *things.Area {
-	toilet := new(things.Item)
-	toilet.SetName("toilet")
-	toilet.SetDesc("I can pee in this.")
+	var jsonBlob = []byte(`{
+		"name": "room",
+		"desc": "A generic looking bathroom.",
+		"items": {
+			"toilet": {
+				"name": "toilet",
+				"desc": "I can pee in this."
+			},
+			"sink": {
+				"name": "sink",
+				"desc": "I can wash my hands in there after peeing."
+			}
+		}
+	}`)
 
-	sink := new(things.Item)
-	sink.SetName("sink")
-	sink.SetDesc("I can wash my hands in there after peeing.")
-
-	area := new(things.Area)
-	area.SetName("room")
-	area.SetDesc("A generic looking bathroom.")
-	area.AddItem(toilet)
-	area.AddItem(sink)
-
-	return area
+	return things.ParseJson(jsonBlob)
 }
 
 func main() {

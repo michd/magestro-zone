@@ -15,3 +15,17 @@ func (item *Item) SetDesc(newDesc string) {
 func (item *Item) Examine() string {
 	return item.desc
 }
+
+func mapToItem(rawMap map[string]interface{}) *Item {
+	item := new(Item)
+
+	if _, ok := rawMap["name"]; ok {
+		item.name, _ = rawMap["name"].(string)
+	}
+
+	if _, ok := rawMap["desc"]; ok {
+		item.desc, _ = rawMap["desc"].(string)
+	}
+
+	return item
+}
