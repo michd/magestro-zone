@@ -1,6 +1,7 @@
 package things
 
 import "encoding/json"
+import "io/ioutil"
 import "strings"
 
 // Areas are anything like a room, which can have items in it to interact with.
@@ -8,6 +9,14 @@ type Area struct {
 	Thing
 	desc  string
 	items map[string]*Item
+}
+
+type AreaError struct {
+	msg string
+}
+
+func (err AreaError) Error() string {
+	return err.msg
 }
 
 // SetDesc updates or sets the description for this area
@@ -95,6 +104,7 @@ func mapToArea(rawMap map[string]interface{}) *Area {
 				if rawItemMap, found2 := rawItem.(map[string]interface{}); found2 {
 					area.AddItem(mapToItem(rawItemMap))
 					// needs moar nested control structures
+					// but not really
 				}
 			}
 		}
@@ -105,14 +115,26 @@ func mapToArea(rawMap map[string]interface{}) *Area {
 
 // ParseJson parses json into a fully qualified area object
 // Actual mapping is done by mapToArea
-func ParseJson(jsonBlob []byte) *Area {
+func ParseJson(jsonBlob []byte) (*Area, error) {
 	rawMap := map[string]interface{}{}
 
 	err := json.Unmarshal(jsonBlob, &rawMap)
 
 	if err != nil {
-		return nil
+		return nil, AreaError{err.Error()}
 	}
 
-	return mapToArea(rawMap)
+	return mapToArea(rawMap), nil
+}
+
+func AreaFromFile(filename string) (*Area, error) {
+	if strings.LastIndex(filename, ".json") != len(filename)-len(".json") {
+		return nil, AreaError{"FromFile: filename was not a .json"}
+	}
+
+	if bytes, err := ioutil.ReadFile(filename); err == nil {
+		return ParseJson(bytes)
+	} else {
+		return nil, AreaError{err.Error()}
+	}
 }

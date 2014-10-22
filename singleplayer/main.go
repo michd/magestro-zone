@@ -10,22 +10,13 @@ import (
 )
 
 func prepareArea() *things.Area {
-	var jsonBlob = []byte(`{
-		"name": "room",
-		"desc": "A generic looking bathroom.",
-		"items": {
-			"toilet": {
-				"name": "toilet",
-				"desc": "I can pee in this."
-			},
-			"sink": {
-				"name": "sink",
-				"desc": "I can wash my hands in there after peeing."
-			}
-		}
-	}`)
-
-	return things.ParseJson(jsonBlob)
+	areaFile := "content/areas/testbathroom.json"
+	if area, err := things.AreaFromFile(areaFile); err == nil {
+		return area
+	} else {
+		fmt.Println("Error loading area: " + err.Error())
+		return nil
+	}
 }
 
 func main() {
