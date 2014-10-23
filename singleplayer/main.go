@@ -10,13 +10,16 @@ import (
 )
 
 func prepareArea() *things.Area {
+
 	areaFile := "content/areas/testbathroom.json"
-	if area, err := things.AreaFromFile(areaFile); err == nil {
+	if itemlikeArea, err := things.MakeFromFile(areaFile); err == nil {
+		area, _ := itemlikeArea.(*things.Area)
 		return area
 	} else {
 		fmt.Println("Error loading area: " + err.Error())
-		return nil
+		os.Exit(1)
 	}
+	return nil
 }
 
 func main() {

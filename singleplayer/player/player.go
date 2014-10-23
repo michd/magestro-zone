@@ -6,7 +6,7 @@ import (
 )
 
 type Player struct {
-	things.Thing
+	name string
 	// Player stats - stolen shamelessly form Fallout's SPECIAL system
 	hp   int // Hitpoints
 	str  int // Strength
@@ -20,20 +20,22 @@ type Player struct {
 	loc *things.Area // Room or whatever the player finds themselves in
 }
 
-// Create a new player given a name
-func Create(name string) (newPlayer *Player) {
-	newPlayer = new(Player)
-
-	if name == "" {
-		newPlayer.SetName("Altin") // A nod to the Galactic Mage by Jon Daulton
-	} else {
-		newPlayer.SetName(name)
-	}
-
-	// TODO: come up with a bunch of sensible init values for the player's stats
-
-	return
+func (player *Player) Name() string {
+	return player.name
 }
+
+func (player *Player) SetName(newName string) {
+	player.name = newName
+}
+
+// TODO add a desc field, implement:
+//   - Desc()
+//   - SetDesc()
+//   - Populate()
+
+// TODO getter/setter for stats:
+//   - GetStat(statName string) int
+//   - SetStat(statName string, newValue int)
 
 func (player Player) quit() {
 	// TODO: any state saving here
@@ -95,4 +97,19 @@ func (player *Player) Execute(command Command) (output string) {
 	}
 
 	return "I don't understand what you want me to do."
+}
+
+// Create a new player given a name
+func Create(name string) (newPlayer *Player) {
+	newPlayer = new(Player)
+
+	if name == "" {
+		newPlayer.SetName("Altin") // A nod to the Galactic Mage by Jon Daulton
+	} else {
+		newPlayer.SetName(name)
+	}
+
+	// TODO: come up with a bunch of sensible init values for the player's stats
+
+	return
 }

@@ -1,14 +1,23 @@
 {
-  "name": "room",
-  "desc": "A generic looking bathroom.",
-  "items": {
-    "toilet": {
-      "name": "toilet",
-      "desc": "I can pee in this."
-    },
-    "sink": {
-      "name": "sink",
-      "desc": "I can wash my hands in there after peeing."
+  "type": "area",
+  "data": {
+    "name": "room",
+    "desc": "A generic looking bathroom.",
+    "items": {
+      "toilet": {
+        "type": "item",
+        "data": {
+          "name": "toilet",
+          "desc": "I can pee in this."
+        }
+      },
+      "sink": {
+        "type": "item",
+        "data": {
+          "name": "sink",
+          "desc": "I can wash my hands in there after peeing."
+        }
+      }
     }
   }
 }

@@ -1,22 +1,25 @@
 package things
 
-import "encoding/json"
-import "io/ioutil"
 import "strings"
 
 // Areas are anything like a room, which can have items in it to interact with.
 type Area struct {
-	Thing
+	name  string
 	desc  string
-	items map[string]*Item
+	items map[string]Itemlike
 }
 
-type AreaError struct {
-	msg string
+func (area *Area) Name() string {
+	return area.name
 }
 
-func (err AreaError) Error() string {
-	return err.msg
+// SetName updates or sets the name for this area
+func (area *Area) SetName(newName string) {
+	area.name = newName
+}
+
+func (area *Area) Desc() string {
+	return area.desc
 }
 
 // SetDesc updates or sets the description for this area
@@ -29,17 +32,17 @@ func (area *Area) SetDesc(newDesc string) {
 // If an item by this name already exists in this area, aborts
 // TODO: allow for multiple of the same item in a room or otherwise
 // identify things with the same name
-func (area *Area) AddItem(item *Item) {
+func (area *Area) AddItem(item Itemlike) {
 	if area.items == nil {
-		area.items = make(map[string]*Item)
+		area.items = make(map[string]Itemlike)
 	}
 
-	if area.Has(item.name) {
+	if area.Has(item.Name()) {
 		// TODO: return error or bool
 		return
 	}
 
-	area.items[item.name] = item
+	area.items[item.Name()] = item
 }
 
 // Examine() returns the description of the area and a list of items in it
@@ -81,15 +84,11 @@ func (area *Area) Has(itemName string) bool {
 }
 
 // Item returns an item by name
-func (area *Area) Item(itemName string) *Item {
+func (area *Area) Item(itemName string) Itemlike {
 	return area.items[itemName]
 }
 
-// mapToArea maps untyped values to its correct fields
-// Used to load JSON into an actual area object
-func mapToArea(rawMap map[string]interface{}) *Area {
-	area := new(Area)
-
+func (area *Area) Populate(rawMap map[string]interface{}) {
 	if _, ok := rawMap["name"]; ok {
 		area.name, _ = rawMap["name"].(string)
 	}
@@ -101,40 +100,10 @@ func mapToArea(rawMap map[string]interface{}) *Area {
 	if _, ok := rawMap["items"]; ok {
 		if rawItems, found := rawMap["items"].(map[string]interface{}); found {
 			for _, rawItem := range rawItems {
-				if rawItemMap, found2 := rawItem.(map[string]interface{}); found2 {
-					area.AddItem(mapToItem(rawItemMap))
-					// needs moar nested control structures
-					// but not really
+				if wrappedItemMap, found2 := rawItem.(map[string]interface{}); found2 {
+					area.AddItem(MakeItem(wrappedItemMap))
 				}
 			}
 		}
-	}
-
-	return area
-}
-
-// ParseJson parses json into a fully qualified area object
-// Actual mapping is done by mapToArea
-func ParseJson(jsonBlob []byte) (*Area, error) {
-	rawMap := map[string]interface{}{}
-
-	err := json.Unmarshal(jsonBlob, &rawMap)
-
-	if err != nil {
-		return nil, AreaError{err.Error()}
-	}
-
-	return mapToArea(rawMap), nil
-}
-
-func AreaFromFile(filename string) (*Area, error) {
-	if strings.LastIndex(filename, ".json") != len(filename)-len(".json") {
-		return nil, AreaError{"FromFile: filename was not a .json"}
-	}
-
-	if bytes, err := ioutil.ReadFile(filename); err == nil {
-		return ParseJson(bytes)
-	} else {
-		return nil, AreaError{err.Error()}
 	}
 }
