@@ -7,6 +7,7 @@ import (
 
 type Player struct {
 	name string
+	desc string
 	// Player stats - stolen shamelessly form Fallout's SPECIAL system
 	hp   int // Hitpoints
 	str  int // Strength
@@ -28,14 +29,102 @@ func (player *Player) SetName(newName string) {
 	player.name = newName
 }
 
-// TODO add a desc field, implement:
-//   - Desc()
-//   - SetDesc()
-//   - Populate()
+func (player *Player) Desc() string {
+	return player.desc
+}
 
-// TODO getter/setter for stats:
-//   - GetStat(statName string) int
-//   - SetStat(statName string, newValue int)
+func (player *Player) SetDesc(newDesc string) {
+	player.desc = newDesc
+}
+
+func (player *Player) Examine() string {
+	return "I am " + player.Name() + ". Just another tiny collection of atoms in this vast universe."
+}
+
+func (player *Player) Populate(rawMap map[string]interface{}) {
+	if _, ok := rawMap["name"]; ok {
+		player.name, _ = rawMap["name"].(string)
+	}
+
+	if _, ok := rawMap["desc"]; ok {
+		player.desc, _ = rawMap["desc"].(string)
+	}
+
+	if _, ok := rawMap["hp"]; ok {
+		player.hp, _ = rawMap["hp"].(int)
+	}
+
+	if _, ok := rawMap["str"]; ok {
+		player.str, _ = rawMap["str"].(int)
+	}
+
+	if _, ok := rawMap["per"]; ok {
+		player.per, _ = rawMap["per"].(int)
+	}
+
+	if _, ok := rawMap["end"]; ok {
+		player.end, _ = rawMap["end"].(int)
+	}
+
+	if _, ok := rawMap["char"]; ok {
+		player.char, _ = rawMap["char"].(int)
+	}
+
+	if _, ok := rawMap["sma"]; ok {
+		player.sma, _ = rawMap["sma"].(int)
+	}
+
+	if _, ok := rawMap["agi"]; ok {
+		player.agi, _ = rawMap["agi"].(int)
+	}
+
+	if _, ok := rawMap["luc"]; ok {
+		player.luc, _ = rawMap["luc"].(int)
+	}
+}
+
+func (p *Player) GetStat(statName string) int {
+	switch statName {
+	case "hp":
+		return p.hp
+	case "str":
+		return p.str
+	case "per":
+		return p.per
+	case "end":
+		return p.end
+	case "char":
+		return p.char
+	case "sma":
+		return p.sma
+	case "agi":
+		return p.agi
+	case "luc":
+		return p.luc
+	}
+	return nil
+}
+
+func (p *Player) SetStat(statName string, v int) {
+	switch statName {
+	case "hp":
+		p.hp = v
+	case "str":
+		p.str = v
+	case "per":
+		p.str = v
+	case "end":
+		p.end = v
+	case "char":
+		p.char = v
+	case "sma":
+		p.sma = v
+	case "agi":
+		p.agi = v
+	case "luc":
+		p.luc = v
+	}
+}
 
 func (player Player) quit() {
 	// TODO: any state saving here
@@ -74,7 +163,7 @@ func (player *Player) Execute(command Command) (output string) {
 		}
 
 		if command.subject == "me" {
-			return "I am " + player.Name() + ". Just another tiny collection of atoms in this vast universe."
+			return player.Examine()
 		}
 
 		thing := player.find(command.subject)
